@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="5dp"
-    tools:context=".Vistas.VisitasActivity">
+    tools:context=".Vistas.ServiciosActivity">
 
     <TextView
         android:id="@+id/t_pagina"
