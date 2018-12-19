@@ -27,16 +27,20 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.dbl.BuildConfig;
 import com.dbl.Controlador.ObservacionRapidaController;
 import com.dbl.Controlador.AuditoriaController;
+import com.dbl.Controlador.PciController;
 import com.dbl.Modelos.Constants;
 import com.dbl.Modelos.ObservacionRapida;
+import com.dbl.Modelos.Pci;
 import com.dbl.Modelos.SesionSingleton;
-import com.dbl.Modelos.AuditoriaSesion;
+import com.dbl.Modelos.ServicioSesion;
 import com.dbl.Modelos.Auditorias;
 import com.dbl.R;
 
@@ -54,10 +58,14 @@ public class ObservacionActivity extends AppCompatActivity implements DialogoGPS
 
     Button b_foto, b_finalizar;
     Spinner s_observacion;
-    EditText e_observacion;
+    EditText e_lectura, e_observacion;
+    RadioButton rb_hab_si, rb_hab_no;
+    RadioButton rb_an_si, rb_an_no;
+    RadioGroup rg_habitado, rg_visible;
     ObservacionRapida obsElegida;
     ProgressDialog progressDialog = null;
-    Auditorias visitaEnviar = null;
+    Auditorias auditoriaEnviar = null;
+    Pci pciEnviar = null;
 
     /** OPCIONES DEL GPS*/
     private ObservacionActivity listenerGps;
@@ -103,16 +111,34 @@ public class ObservacionActivity extends AppCompatActivity implements DialogoGPS
         listenerGps = this;
         comenzarLocalizacion();
 
-
         b_foto = findViewById(R.id.b_foto);
         b_finalizar = findViewById(R.id.b_finalizar);
         s_observacion = findViewById(R.id.s_observacion);
         e_observacion = findViewById(R.id.e_observacion);
-        b_foto.setEnabled(false);
-        b_finalizar.setEnabled(false);
-        b_finalizar.setText("Esperando el Punto GPS...");
-        if (AuditoriaSesion.getInstance().getObservacionAnalisis() != null) {
-            e_observacion.setText(AuditoriaSesion.getInstance().getObservacionAnalisis());
+        e_lectura = findViewById(R.id.e_lectura);
+        rb_hab_si = findViewById(R.id.rb_hab_si);
+        rb_hab_no = findViewById(R.id.rb_hab_no);
+        rb_an_si = findViewById(R.id.rb_an_si);
+        rb_an_no = findViewById(R.id.rb_an_no);
+        rg_habitado = findViewById(R.id.rg_habitado);
+        rg_visible = findViewById(R.id.rg_visible);
+
+        if (ServicioSesion.getInstance().getTipoServicio() == Constants.EXTRA_SERVICIO_TIPO_PCI) {
+            rg_habitado.setVisibility(View.INVISIBLE);
+            rg_visible.setVisibility(View.INVISIBLE);
+            s_observacion.setVisibility(View.INVISIBLE);
+        }
+
+        if (ServicioSesion.getInstance().getAnomalia() == Constants.EXTRA_AN_NO_EXISTE) {
+            e_lectura.setVisibility(View.INVISIBLE);
+            e_lectura.setEnabled(false);
+        }
+
+        b_foto.setEnabled(true);
+        b_finalizar.setEnabled(true);
+        //b_finalizar.setText("Esperando el Punto GPS...");
+        if (ServicioSesion.getInstance().getObservacionAnalisis() != null) {
+            e_observacion.setText(ServicioSesion.getInstance().getObservacionAnalisis());
         }
 
         ObservacionRapidaController obs = new ObservacionRapidaController();
@@ -122,8 +148,8 @@ public class ObservacionActivity extends AppCompatActivity implements DialogoGPS
         obsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         s_observacion.setAdapter(obsAdapter);
-        if (AuditoriaSesion.getInstance().getObservacionRapida() != 0) {
-            ArrayList<ObservacionRapida> obs2 = obs.consultar(0, 0, "id=" + AuditoriaSesion.getInstance().getObservacionRapida(), this);
+        if (ServicioSesion.getInstance().getObservacionRapida() != 0) {
+            ArrayList<ObservacionRapida> obs2 = obs.consultar(0, 0, "id=" + ServicioSesion.getInstance().getObservacionRapida(), this);
             s_observacion.setSelection(getIndex(s_observacion, obs2.get(0).getNombre()));
         } else {
             ObservacionRapida ob = new ObservacionRapida();
@@ -135,7 +161,7 @@ public class ObservacionActivity extends AppCompatActivity implements DialogoGPS
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 obsElegida = (ObservacionRapida) parentView.getItemAtPosition(position);
-                AuditoriaSesion.getInstance().setObservacionRapida(obsElegida.getId());
+                ServicioSesion.getInstance().setObservacionRapida(obsElegida.getId());
             }
 
             @Override
@@ -154,45 +180,61 @@ public class ObservacionActivity extends AppCompatActivity implements DialogoGPS
         b_finalizar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean pasa = true;
-                boolean fotoRequerida = true, observacionRequerida = false;
-                String motivo = "";
-
-                AuditoriaSesion visi = AuditoriaSesion.getInstance();
-                if(visi.getAnomalia() == 10){
-                    fotoRequerida = false;
-                }
-
-                if(AuditoriaSesion.getInstance().isObservacionObligatoria()){
-                    observacionRequerida = true;
-                }
-                if(fotoRequerida){
-                    if (AuditoriaSesion.getInstance().getFoto() != null) {
-                        if (AuditoriaSesion.getInstance().getFoto().equals("")) {
-                            pasa = false;
-                            motivo = "Debe tomar una foto para soporte.";
-                        }
-                    } else {
-                        pasa = false;
-                        motivo = "Debe tomar una foto para soporte.";
-                    }
-                }
-                if(observacionRequerida){
-                    if (e_observacion.getText().toString().trim().equals("")) {
-                        pasa = false;
-                        motivo = "Debe escribir la observacion.";
-                    }
-                }
-
-                if(pasa){
-                    AuditoriaSesion.getInstance().setObservacionAnalisis(e_observacion.getText().toString());
-                    validarGuardarGps();
-                }else{
-                    Toast.makeText(ObservacionActivity.this, motivo, Toast.LENGTH_LONG).show();
-                }
+                validarGuardar();
             }
         });
-        timerHandler.postDelayed(timerRunnable, 0);
+        //timerHandler.postDelayed(timerRunnable, 0);
+    }
+
+    private void validarGuardar() {
+        boolean pasa = true;
+        boolean fotoRequerida = true, lecturaRequerida = false, observacionRequerida = false;
+        String motivo = "";
+
+        ServicioSesion servSess = ServicioSesion.getInstance();
+        if(servSess.getAnomalia() == 10){
+            fotoRequerida = false;
+        }
+
+        if(ServicioSesion.getInstance().isObservacionObligatoria()){
+            observacionRequerida = true;
+        }
+
+        if(e_lectura.isEnabled()){
+            lecturaRequerida = true;
+        }
+
+        if(fotoRequerida){
+            if (ServicioSesion.getInstance().getFoto() != null) {
+                if (ServicioSesion.getInstance().getFoto().equals("")) {
+                    pasa = false;
+                    motivo = "Debe tomar una foto para soporte.";
+                }
+            } else {
+                pasa = false;
+                motivo = "Debe tomar una foto para soporte.";
+            }
+        }
+        if(observacionRequerida){
+            if (e_observacion.getText().toString().trim().equals("")) {
+                pasa = false;
+                motivo = "Debe escribir la observacion.";
+            }
+        }
+        if(lecturaRequerida){
+            if (e_lectura.getText().toString().trim().equals("")) {
+                pasa = false;
+                motivo = "Debe escribir la Lectura.";
+            }
+        }
+
+        if(pasa){
+            ServicioSesion.getInstance().setObservacionAnalisis(e_observacion.getText().toString());
+            guardarVisita();
+            //validarGuardarGps();
+        }else{
+            Toast.makeText(ObservacionActivity.this, motivo, Toast.LENGTH_LONG).show();
+        }
     }
 
     //private method of your class
@@ -214,60 +256,88 @@ public class ObservacionActivity extends AppCompatActivity implements DialogoGPS
             Toast.makeText(this, "SIN PUNTO GPS.", Toast.LENGTH_SHORT).show();
         }
 
-        AuditoriaController vis = new AuditoriaController();
-        int orden = vis.ultimoOrden(this);
-        orden = orden + 1;
+        if(ServicioSesion.getInstance().getTipoServicio() == Constants.EXTRA_SERVICIO_TIPO_AUDITORIA){
+            AuditoriaController audCont = new AuditoriaController();
+            int orden = audCont.ultimoOrden(this);
+            orden = orden + 1;
 
-        AuditoriaSesion sesion = AuditoriaSesion.getInstance();
-        visitaEnviar = new Auditorias();
-        visitaEnviar.setId(sesion.getId());
-        visitaEnviar.setResultado(sesion.getResultado());
-        visitaEnviar.setAnomalia(sesion.getAnomalia());
-        visitaEnviar.setEntidadRecaudo(sesion.getEntidadRecaudo());
-        visitaEnviar.setFechaPago(sesion.getFechaPago());
-        visitaEnviar.setFechaCompromiso(sesion.getFechaCompromiso());
-        visitaEnviar.setPersonaContacto(sesion.getPersonaContacto());
-        visitaEnviar.setCedula(sesion.getCedula());
-        visitaEnviar.setTitularPago(sesion.getTitularPago());
-        visitaEnviar.setTelefono(sesion.getTelefono());
-        visitaEnviar.setEmail(sesion.getEmail());
-        visitaEnviar.setObservacionRapida(sesion.getObservacionRapida());
-        visitaEnviar.setLectura(sesion.getLectura());
-        visitaEnviar.setObservacionAnalisis(sesion.getObservacionAnalisis());
-        visitaEnviar.setLatitud(LATITUD_FINAL);
-        visitaEnviar.setLongitud(LONGITUD_FINAL);
-        visitaEnviar.setOrden(sesion.getOrden());
-        visitaEnviar.setFoto(sesion.getFoto());
+            ServicioSesion sesion = ServicioSesion.getInstance();
+            auditoriaEnviar = new Auditorias();
+            auditoriaEnviar.setId(sesion.getId());
+            auditoriaEnviar.setAnomalia(sesion.getAnomalia());
+            auditoriaEnviar.setLectura(sesion.getLectura());
+            if(rb_hab_si.isChecked()){
+                auditoriaEnviar.setHabitado(1);
+            }else{
+                auditoriaEnviar.setHabitado(0);
+            }
+            if(rb_an_si.isChecked()){
+                auditoriaEnviar.setVisible(1);
+            }else{
+                auditoriaEnviar.setVisible(0);
+            }
+            auditoriaEnviar.setObservacionRapida(sesion.getObservacionRapida());
 
-        String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-                .format(new Date());
+            auditoriaEnviar.setObservacionAnalisis(sesion.getObservacionAnalisis());
+            auditoriaEnviar.setLatitud(LATITUD_FINAL);
+            auditoriaEnviar.setLongitud(LONGITUD_FINAL);
+            auditoriaEnviar.setOrden(sesion.getOrden());
+            auditoriaEnviar.setFoto(sesion.getFoto());
 
-        ContentValues registro = new ContentValues();
-        registro.put("resultado", visitaEnviar.getResultado());
-        registro.put("anomalia", visitaEnviar.getAnomalia());
-        registro.put("entidad_recaudo", visitaEnviar.getEntidadRecaudo());
-        registro.put("fecha_pago", visitaEnviar.getFechaPago());
-        registro.put("fecha_compromiso", visitaEnviar.getFechaCompromiso());
-        registro.put("persona_contacto", visitaEnviar.getPersonaContacto());
-        registro.put("cedula", visitaEnviar.getCedula());
-        registro.put("titular_pago", visitaEnviar.getTitularPago());
-        registro.put("telefono", visitaEnviar.getTelefono());
-        registro.put("email", visitaEnviar.getEmail());
-        registro.put("observacion_rapida", visitaEnviar.getObservacionRapida());
-        registro.put("observacion_analisis", visitaEnviar.getObservacionAnalisis());
-        registro.put("lectura", visitaEnviar.getLectura());
-        registro.put("latitud", visitaEnviar.getLatitud());
-        registro.put("longitud", visitaEnviar.getLongitud());
-        registro.put("orden", orden);
-        registro.put("foto", visitaEnviar.getFoto());
-        registro.put("fecha_realizado", date);
-        registro.put("estado", 1);
-        registro.put("gestor_realiza_id", SesionSingleton.getInstance().getFkId());
-        vis.actualizar(registro, "id = " + AuditoriaSesion.getInstance().getId(), this);
+            String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                    .format(new Date());
+
+            ContentValues registro = new ContentValues();
+            registro.put("anomalia", auditoriaEnviar.getAnomalia());
+            registro.put("lectura", auditoriaEnviar.getLectura());
+            registro.put("habitado", auditoriaEnviar.getHabitado());
+            registro.put("visible", auditoriaEnviar.getVisible());
+            registro.put("observacion_rapida", auditoriaEnviar.getObservacionRapida());
+            registro.put("observacion_analisis", auditoriaEnviar.getObservacionAnalisis());
+            registro.put("latitud", auditoriaEnviar.getLatitud());
+            registro.put("longitud", auditoriaEnviar.getLongitud());
+            registro.put("orden", orden);
+            registro.put("foto", auditoriaEnviar.getFoto());
+            registro.put("fecha_realizado", date);
+            registro.put("estado", 1);
+            registro.put("lector_realiza_id", SesionSingleton.getInstance().getFkId());
+            audCont.actualizar(registro, "id = " + ServicioSesion.getInstance().getId(), this);
+        } else {
+            PciController pciCont = new PciController();
+            int orden = pciCont.ultimoOrden(this);
+            orden = orden + 1;
+
+            ServicioSesion sesion = ServicioSesion.getInstance();
+            pciEnviar = new Pci();
+            pciEnviar.setId(sesion.getId());
+            pciEnviar.setAnomalia(sesion.getAnomalia());
+            pciEnviar.setLectura(sesion.getLectura());
+            pciEnviar.setObservacionAnalisis(sesion.getObservacionAnalisis());
+            pciEnviar.setLatitud(LATITUD_FINAL);
+            pciEnviar.setLongitud(LONGITUD_FINAL);
+            pciEnviar.setOrden(sesion.getOrden());
+            pciEnviar.setFoto(sesion.getFoto());
+
+            String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                    .format(new Date());
+
+            ContentValues registro = new ContentValues();
+            registro.put("anomalia", pciEnviar.getAnomalia());
+            registro.put("lectura", pciEnviar.getLectura());
+            registro.put("observacion_analisis", pciEnviar.getObservacionAnalisis());
+            registro.put("latitud", pciEnviar.getLatitud());
+            registro.put("longitud", pciEnviar.getLongitud());
+            registro.put("orden", orden);
+            registro.put("foto", pciEnviar.getFoto());
+            registro.put("fecha_realizado", date);
+            registro.put("estado", 1);
+            registro.put("lector_realiza_id", SesionSingleton.getInstance().getFkId());
+            pciCont.actualizar(registro, "id = " + ServicioSesion.getInstance().getId(), this);
+        }
 
         Intent returnIntent = new Intent();
         setResult(Activity.RESULT_OK, returnIntent);
-        AuditoriaSesion.resetSesion();
+        ServicioSesion.resetSesion();
         progressDialog.dismiss();
         finish();
     }
@@ -320,7 +390,7 @@ public class ObservacionActivity extends AppCompatActivity implements DialogoGPS
                         b.recycle();
                         out.recycle();
 
-                        AuditoriaSesion.getInstance().setFoto(getStringFromFile(photoFile));
+                        ServicioSesion.getInstance().setFoto(getStringFromFile(photoFile));
                     } catch (Exception e) {
                         System.err.println("Error foto: " + e);
                     }
@@ -333,9 +403,9 @@ public class ObservacionActivity extends AppCompatActivity implements DialogoGPS
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        AuditoriaSesion.getInstance().setObservacionAnalisis(e_observacion.getText().toString());
+        ServicioSesion.getInstance().setObservacionAnalisis(e_observacion.getText().toString());
         if (s_observacion.getSelectedItem() != null) {
-            AuditoriaSesion.getInstance().setObservacionRapida(((ObservacionRapida) s_observacion.getSelectedItem()).getId());
+            ServicioSesion.getInstance().setObservacionRapida(((ObservacionRapida) s_observacion.getSelectedItem()).getId());
         }
         Intent returnIntent = new Intent();
         setResult(Activity.RESULT_CANCELED, returnIntent);

@@ -18,8 +18,10 @@ public final class Constants {
     public static final int FOTO_REQUEST_CODE = 998;
 
     /**anomalias*/
-    public static final int AN_OTROS = 22;
+    public static final int EXTRA_AN_NO_EXISTE = 1;
 
+    public static final int EXTRA_SERVICIO_TIPO_AUDITORIA = 1;
+    public static final int EXTRA_SERVICIO_TIPO_PCI = 2;
     public static final String EXTRA_SERVICIO_ID = "servicio_id";
     public static final String EXTRA_SERVICIO_TIPO_ID = "servicio_tipo_id";
     public static final String EXTRA_CT = "ct";

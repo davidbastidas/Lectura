@@ -9,221 +9,286 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.dbl.Controlador.AnomaliasController;
-import com.dbl.Controlador.EntidadesPagoController;
-import com.dbl.Controlador.ObservacionRapidaController;
-import com.dbl.Controlador.ResultadosController;
 import com.dbl.Controlador.AuditoriaController;
+import com.dbl.Controlador.ObservacionRapidaController;
+import com.dbl.Controlador.PciController;
 import com.dbl.Modelos.Anomalias;
 import com.dbl.Modelos.Auditorias;
 import com.dbl.Modelos.Constants;
-import com.dbl.Modelos.EntidadesPago;
 import com.dbl.Modelos.ObservacionRapida;
-import com.dbl.Modelos.Resultados;
+import com.dbl.Modelos.Pci;
+import com.dbl.Modelos.Servicio;
+import com.dbl.Modelos.ServicioSesion;
 import com.dbl.R;
-import com.dbl.Vistas.Adaptader.AdapterDetalleVisita;
+import com.dbl.Vistas.Adaptader.AdapterDetalleServicio;
 
 import java.util.ArrayList;
 
 public class DetalleActivity extends AppCompatActivity {
 
-    Button b_ir_resultado;
+    Button b_ir_anomalia;
     ListView l_detalle;
-    long visitaId;
+    long servicioId, servicioTipoId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalle);
-        setTitle("Detalle de la Visita");
+        setTitle("Detalle del Servicio");
 
-        b_ir_resultado = findViewById(R.id.b_ir_resultado);
+        b_ir_anomalia = findViewById(R.id.b_ir_anomalia);
         l_detalle = findViewById(R.id.l_detalle);
 
-        Auditorias visita = null;
-        AuditoriaController vis = new AuditoriaController();
+        Auditorias auditoria = null;
+        AuditoriaController audCont = new AuditoriaController();
+
+        Pci pci = null;
+        PciController pciCont = new PciController();
+
+        ArrayList<Servicio> data = null;
         Bundle extras = getIntent().getExtras();
         if(extras == null) {
-            visitaId= 0;
+            servicioId = 0;
         } else {
-            visitaId = extras.getLong(Constants.EXTRA_SERVICIO_ID);
-            ArrayList<Auditorias> visitas = vis.consultar(0, 0, "id = " + visitaId, this);
-            visita = visitas.get(0);
+            servicioId = extras.getLong(Constants.EXTRA_SERVICIO_ID);
+            servicioTipoId = extras.getLong(Constants.EXTRA_SERVICIO_TIPO_ID);
+            if(servicioTipoId == Constants.EXTRA_SERVICIO_TIPO_AUDITORIA){
+                auditoria = audCont.consultar(0, 0, "id = " + servicioId, this).get(0);
+                data = llenarPorAuditoria(auditoria);
+            } else if(servicioTipoId == Constants.EXTRA_SERVICIO_TIPO_PCI){
+                pci = pciCont.consultar(0, 0, "id = " + servicioId, this).get(0);
+                data = llenarPorPci(pci);
+            }
         }
 
-        ArrayList<Auditorias> data = new ArrayList<Auditorias>();
-        Auditorias datum = null;
-
-        datum = new Auditorias();
-        datum.setCliente("NIC");
-        datum.setPersonaContacto("" + visita.getNic());
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("Cliente");
-        datum.setPersonaContacto(visita.getCliente());
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("Direccion");
-        datum.setPersonaContacto(visita.getDireccion());
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("Deuda");
-        datum.setPersonaContacto("" + visita.getDeuda());
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("Facturas");
-        datum.setPersonaContacto("" + visita.getFacturas());
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("Medidor");
-        datum.setPersonaContacto(visita.getMedidor());
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("Fecha Limite para Acuerdo de Pago");
-        datum.setPersonaContacto(visita.getFechaLimiteCompromiso());
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("Municipio");
-        datum.setPersonaContacto(visita.getMunicipio());
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("Localidad");
-        datum.setPersonaContacto(visita.getLocalidad());
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("Barrio");
-        datum.setPersonaContacto(visita.getBarrio());
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("Tipo de Gestion");
-        datum.setPersonaContacto(visita.getTipoVisita());
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("Tarifa");
-        datum.setPersonaContacto(visita.getTarifa());
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("Nis");
-        datum.setPersonaContacto("" + visita.getNis());
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("Cedula");
-        datum.setPersonaContacto(visita.getCedula());
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("Titular de Pago");
-        datum.setPersonaContacto(visita.getTitularPago());
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("Atiende");
-        datum.setPersonaContacto(visita.getPersonaContacto());
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("Telefono");
-        datum.setPersonaContacto(visita.getTelefono());
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("E-mail");
-        datum.setPersonaContacto(visita.getEmail());
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("Fecha de Pago");
-        datum.setPersonaContacto(visita.getFechaPago());
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("Fecha de Compromiso");
-        datum.setPersonaContacto(visita.getFechaCompromiso());
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("Observaciones");
-        String obsRapida = "";
-        if(visita.getObservacionRapida() != 0){
-            ObservacionRapidaController oc = new ObservacionRapidaController();
-            ArrayList<ObservacionRapida> consultar = oc.consultar(0, 0, "id = " + visita.getObservacionRapida(), this);
-            obsRapida = consultar.get(0).getNombre();
-        }
-        datum.setPersonaContacto("" + obsRapida);
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("Otras Observaciones");
-        datum.setPersonaContacto(visita.getObservacionAnalisis());
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("Anomalia");
-        String anomalia = "";
-        if(visita.getAnomalia() != 0){
-            AnomaliasController an = new AnomaliasController();
-            ArrayList<Anomalias> consultar = an.consultar(0, 0, "id = " + visita.getAnomalia(), this);
-            anomalia = consultar.get(0).getNombre();
-        }
-        datum.setPersonaContacto("" + anomalia);
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("Resultado");
-        String resultado = "";
-        if(visita.getResultado() != 0){
-            ResultadosController rs = new ResultadosController();
-            ArrayList<Resultados> consultar = rs.consultar(0, 0, "id = " + visita.getResultado(), this);
-            resultado = consultar.get(0).getNombre();
-        }
-        datum.setPersonaContacto("" + resultado);
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("Entidad de Recaudo");
-        String entidad = "";
-        if(visita.getEntidadRecaudo() != 0){
-            EntidadesPagoController rs = new EntidadesPagoController();
-            ArrayList<EntidadesPago> consultar = rs.consultar(0, 0, "id = " + visita.getEntidadRecaudo(), this);
-            entidad = consultar.get(0).getNombre();
-        }
-        datum.setPersonaContacto("" + entidad);
-        data.add(datum);
-
-        datum = new Auditorias();
-        datum.setCliente("IDBD");
-        datum.setPersonaContacto("" + visita.getId());
-        data.add(datum);
-
-        AdapterDetalleVisita adapter = new AdapterDetalleVisita(this, data);
+        AdapterDetalleServicio adapter = new AdapterDetalleServicio(this, data);
         l_detalle.setAdapter(adapter);
 
-        if(visita.getEstado() != 0){
-            b_ir_resultado.setEnabled(false);
+        if(auditoria.getEstado() != 0){
+            b_ir_anomalia.setEnabled(false);
         }
 
-        b_ir_resultado.setOnClickListener(new View.OnClickListener() {
+        b_ir_anomalia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (Constants.isGpsActivo(DetalleActivity.this)) {
-                    Intent intentar = new Intent(DetalleActivity.this, ResultadoActivity.class);
+                    ServicioSesion.getInstance().setTipoServicio(servicioTipoId);
+                    Intent intentar = new Intent(DetalleActivity.this, AnomaliaActivity.class);
                     startActivityForResult(intentar, Constants.SERVICIO_REQUEST_CODE);
                 } else {
                     Constants.ActivarGPS(DetalleActivity.this);
                 }
             }
         });
+    }
+
+    private ArrayList<Servicio> llenarPorAuditoria(Auditorias auditoria) {
+        ArrayList<Servicio> data = new ArrayList<>();
+        Servicio datum = null;
+
+        datum = new Servicio();
+        datum.setTitulo("Medidor");
+        datum.setSubtitulo("" + auditoria.getMedidor());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("NIC");
+        datum.setSubtitulo("" + auditoria.getNic());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Direccion");
+        datum.setSubtitulo(auditoria.getDireccion());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Cliente");
+        datum.setSubtitulo("" + auditoria.getCliente());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Barrio");
+        datum.setSubtitulo("" + auditoria.getBarrio());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Motivo");
+        datum.setSubtitulo(auditoria.getMotivo());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Nis");
+        datum.setSubtitulo("" + auditoria.getNis());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Localidad");
+        datum.setSubtitulo(auditoria.getLocalidad());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Ruta");
+        datum.setSubtitulo("" + auditoria.getRuta());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Itin");
+        datum.setSubtitulo("" + auditoria.getItin());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Lectura");
+        datum.setSubtitulo(auditoria.getLectura());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Anomalia");
+        String anomalia = "";
+        if(auditoria.getAnomalia() != 0){
+            AnomaliasController an = new AnomaliasController();
+            ArrayList<Anomalias> consultar = an.consultar(0, 0, "id = " + auditoria.getAnomalia(), this);
+            anomalia = consultar.get(0).getNombre();
+        }
+        datum.setSubtitulo("" + anomalia);
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Tipo Servicio");
+        String obsRapida = "";
+        if(auditoria.getObservacionRapida() != 0){
+            ObservacionRapidaController oc = new ObservacionRapidaController();
+            ArrayList<ObservacionRapida> consultar = oc.consultar(0, 0, "id = " + auditoria.getObservacionRapida(), this);
+            obsRapida = consultar.get(0).getNombre();
+        }
+        datum.setSubtitulo("" + obsRapida);
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Habitado?");
+        if(auditoria.getHabitado() == 1){
+            datum.setSubtitulo("SI");
+        } else {
+            datum.setSubtitulo("NO");
+        }
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Visible?");
+        if(auditoria.getVisible() == 1){
+            datum.setSubtitulo("SI");
+        } else {
+            datum.setSubtitulo("NO");
+        }
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Otras Observaciones");
+        datum.setSubtitulo(auditoria.getObservacionAnalisis());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("IDBD");
+        datum.setSubtitulo("" + auditoria.getId());
+        data.add(datum);
+
+        return data;
+    }
+
+    private ArrayList<Servicio> llenarPorPci(Pci pci) {
+        ArrayList<Servicio> data = new ArrayList<>();
+        Servicio datum = null;
+
+        datum = new Servicio();
+        datum.setTitulo("CT");
+        datum.setSubtitulo("" + pci.getCt());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("MT");
+        datum.setSubtitulo("" + pci.getMt());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Medidor");
+        datum.setSubtitulo("" + pci.getMedidor());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Direccion");
+        datum.setSubtitulo(pci.getDireccion());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Medidor Anterior");
+        datum.setSubtitulo("" + pci.getMedidorAnterior());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Medidor Posterior");
+        datum.setSubtitulo("" + pci.getMedidorPosterior());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Anomalia Anterior");
+        datum.setSubtitulo("" + pci.getAnAnterior());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Barrio");
+        datum.setSubtitulo(pci.getBarrio());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Municipio");
+        datum.setSubtitulo("" + pci.getMunicipio());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Codigo");
+        datum.setSubtitulo(pci.getCodigo());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Unicom");
+        datum.setSubtitulo("" + pci.getUnicom());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Ruta");
+        datum.setSubtitulo("" + pci.getRuta());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Itin");
+        datum.setSubtitulo("" + pci.getItin());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Lectura");
+        datum.setSubtitulo(pci.getLectura());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Anomalia");
+        String anomalia = "";
+        if(pci.getAnomalia() != 0){
+            AnomaliasController an = new AnomaliasController();
+            ArrayList<Anomalias> consultar = an.consultar(0, 0, "id = " + pci.getAnomalia(), this);
+            anomalia = consultar.get(0).getNombre();
+        }
+        datum.setSubtitulo("" + anomalia);
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("Otras Observaciones");
+        datum.setSubtitulo(pci.getObservacionAnalisis());
+        data.add(datum);
+
+        datum = new Servicio();
+        datum.setTitulo("IDBD");
+        datum.setSubtitulo("" + pci.getId());
+        data.add(datum);
+
+        return data;
     }
 
     @Override

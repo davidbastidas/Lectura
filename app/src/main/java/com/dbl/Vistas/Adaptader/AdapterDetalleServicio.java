@@ -9,19 +9,20 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.dbl.Modelos.Auditorias;
+import com.dbl.Modelos.Servicio;
 import com.dbl.R;
 
 import java.util.ArrayList;
 
-public class AdapterDetalleVisita extends BaseAdapter{
+public class AdapterDetalleServicio extends BaseAdapter{
 	private final Activity actividad;
-	private ArrayList<Auditorias> detalle;
+	private ArrayList<Servicio> detalle;
 
 	View view;
 	LayoutInflater inflater;
 	TextView t_titulo, t_subtitulo;
 
-	public AdapterDetalleVisita(Activity actividad, ArrayList<Auditorias> detalle){
+	public AdapterDetalleServicio(Activity actividad, ArrayList<Servicio> detalle){
 		super();
 		this.actividad = actividad;
 		this.detalle = detalle;
@@ -33,8 +34,8 @@ public class AdapterDetalleVisita extends BaseAdapter{
 
 		t_titulo = view.findViewById(R.id.t_titulo);
 		t_subtitulo = view.findViewById(R.id.t_subtitulo);
-		t_titulo.setText(detalle.get(position).getCliente().toUpperCase());
-		t_subtitulo.setText(detalle.get(position).getPersonaContacto().toUpperCase());
+		t_titulo.setText(detalle.get(position).getTitulo().toUpperCase());
+		t_subtitulo.setText(detalle.get(position).getSubtitulo().toUpperCase());
 		return view;
 	}
 

@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,9 +27,11 @@ import java.util.ArrayList;
 public class ServiciosActivity extends AppCompatActivity {
 
     TextView t_pagina;
+    EditText e_buscar_servicio;
     ListView l_visitas;
     AuditoriaController audCont = null;
     PciController pciCont = null;
+    AdapterServicios adapter = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +40,7 @@ public class ServiciosActivity extends AppCompatActivity {
         setTitle("Lista de Servicios");
 
         t_pagina = findViewById(R.id.t_pagina);
+        e_buscar_servicio = findViewById(R.id.e_buscar_servicio);
         l_visitas = findViewById(R.id.l_visitas);
 
         Bundle extras = getIntent().getExtras();
@@ -67,7 +73,7 @@ public class ServiciosActivity extends AppCompatActivity {
                     servicio.setSubtitulo(pci.getBarrio() + " - MED: " + pci.getMedidor() + " - CT: " + pci.getCt() + " - MT: " + pci.getMt());
                     servicios.add(servicio);
                 }
-                AdapterServicios adapter = new AdapterServicios(this, servicios);
+                adapter = new AdapterServicios(this, servicios);
                 l_visitas.setAdapter(adapter);
                 t_pagina.setText(servicios.size() + " Servicios por Barrio");
             }else if (extras.containsKey(Constants.EXTRA_NIC)) {
@@ -124,12 +130,26 @@ public class ServiciosActivity extends AppCompatActivity {
                     servicio.setSubtitulo(pci.getBarrio() + " - MED: " + pci.getMedidor() + " - CT: " + pci.getCt() + " - MT: " + pci.getMt());
                     servicios.add(servicio);
                 }
-                AdapterServicios adapter = new AdapterServicios(this, servicios);
+                adapter = new AdapterServicios(this, servicios);
                 l_visitas.setAdapter(adapter);
                 t_pagina.setText(servicios.size() + " Servicio(s) Encontrado(s)");
             }
         }
 
+        e_buscar_servicio.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
+                // When user changed the Text
+                ServiciosActivity.this.adapter.getFilter().filter(cs);
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) { }
+
+            @Override
+            public void afterTextChanged(Editable arg0) {}
+        });
 
         l_visitas.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -156,7 +176,7 @@ public class ServiciosActivity extends AppCompatActivity {
         for (Auditorias aud : auditorias) {
             servicio = new Servicio();
             servicio.setId(aud.getId());
-            servicio.setTipoServicio(1);
+            servicio.setTipoServicio(Constants.EXTRA_SERVICIO_TIPO_AUDITORIA);
             servicio.setTitulo(aud.getDireccion());
             servicio.setSubtitulo(aud.getBarrio() + " - NIC: " + aud.getNic());
             servicios.add(servicio);
@@ -167,14 +187,14 @@ public class ServiciosActivity extends AppCompatActivity {
         for (Pci pci : pcis) {
             servicio = new Servicio();
             servicio.setId(pci.getId());
-            servicio.setTipoServicio(2);
+            servicio.setTipoServicio(Constants.EXTRA_SERVICIO_TIPO_PCI);
             servicio.setTitulo(pci.getDireccion());
             servicio.setSubtitulo(pci.getBarrio() + " - MED: " + pci.getMedidor() + " - CT: " + pci.getCt() + " - MT: " + pci.getMt());
             servicios.add(servicio);
         }
         
         //combinando las visitas
-        AdapterServicios adapter = new AdapterServicios(this, servicios);
+        adapter = new AdapterServicios(this, servicios);
         l_visitas.setAdapter(adapter);
         t_pagina.setText(servicios.size() + " Servicios");
     }

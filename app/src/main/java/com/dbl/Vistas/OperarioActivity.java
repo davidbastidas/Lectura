@@ -19,7 +19,7 @@ import com.dbl.Controlador.GestorConexion;
 import com.dbl.Controlador.ObservacionRapidaController;
 import com.dbl.Controlador.PciController;
 import com.dbl.Modelos.Anomalias;
-import com.dbl.Modelos.AuditoriaSesion;
+import com.dbl.Modelos.ServicioSesion;
 import com.dbl.Modelos.Auditorias;
 import com.dbl.Modelos.Constants;
 import com.dbl.Modelos.ObservacionRapida;
@@ -90,7 +90,7 @@ public class OperarioActivity extends AppCompatActivity {
         super.onResume();
         enviarVisitas();
         mostrarReporte();
-        AuditoriaSesion.resetSesion();
+        ServicioSesion.resetSesion();
     }
 
     @Override
@@ -327,6 +327,8 @@ public class OperarioActivity extends AppCompatActivity {
             auditoriaEnviar.setId(arrayAuditorias.get(i).getId());
             auditoriaEnviar.setLectura(arrayAuditorias.get(i).getLectura());
             auditoriaEnviar.setAnomalia(arrayAuditorias.get(i).getAnomalia());
+            auditoriaEnviar.setHabitado(arrayAuditorias.get(i).getHabitado());
+            auditoriaEnviar.setVisible(arrayAuditorias.get(i).getVisible());
             auditoriaEnviar.setObservacionRapida(arrayAuditorias.get(i).getObservacionRapida());
             auditoriaEnviar.setObservacionAnalisis(arrayAuditorias.get(i).getObservacionAnalisis());
             auditoriaEnviar.setLatitud(arrayAuditorias.get(i).getLatitud());

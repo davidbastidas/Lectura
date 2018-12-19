@@ -10,7 +10,6 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
 
-import com.dbl.Modelos.Auditorias;
 import com.dbl.Modelos.Servicio;
 import com.dbl.R;
 
@@ -32,7 +31,7 @@ public class AdapterServicios extends BaseAdapter implements Filterable {
 
 	public View getView(int position, View convertView, ViewGroup parent) {
 		inflater = actividad.getLayoutInflater();
-		view = inflater.inflate(R.layout.adapter_visitas, null, true);
+		view = inflater.inflate(R.layout.adapter_servicios, null, true);
 
 		titulo = view.findViewById(R.id.t_titulo);
 		barrio = view.findViewById(R.id.t_subtitulo);

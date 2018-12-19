@@ -15,7 +15,7 @@ import android.widget.Toast;
 import com.dbl.Controlador.AnomaliasController;
 import com.dbl.Modelos.Anomalias;
 import com.dbl.Modelos.Constants;
-import com.dbl.Modelos.AuditoriaSesion;
+import com.dbl.Modelos.ServicioSesion;
 import com.dbl.R;
 import com.dbl.Vistas.Adaptader.AdapterAnomalias;
 
@@ -35,27 +35,8 @@ public class AnomaliaActivity extends AppCompatActivity {
         l_anomalias = findViewById(R.id.l_anomalias);
 
         AnomaliasController anom = new AnomaliasController();
-        String condicion = "";
-        if(AuditoriaSesion.getInstance().getResultado() == Constants.RES_CONTACTO_NO_EFECTIVO){
-            condicion = "id IN(2,3,4,5,1)";
-        }
-        if(AuditoriaSesion.getInstance().getResultado() == Constants.RES_REGISTRO_NO_VALIDO){
-            condicion = "id IN(6,7,8,9)";
-        }
-        if(AuditoriaSesion.getInstance().getResultado() == Constants.RES_EVALUAR_CAPACIDAD_OPERATIVA){
-            condicion = "id IN(11,12,13,14)";
-        }
-        if(AuditoriaSesion.getInstance().getResultado() == Constants.RES_GESTION_NO_PROCEDE){
-            condicion = "id IN(12,14,24)";
-        }
-        if(AuditoriaSesion.getInstance().getResultado() == Constants.RES_CLIENTE_CONDICIONA_PAGO){
-            condicion = "id IN(11,16,17,18,19,20,21,22,23)";
-        }
-        if(AuditoriaSesion.getInstance().getResultado() == Constants.RES_REPROGRAMACION){
-            condicion = "id IN(1)";
-        }
 
-        ArrayList<Anomalias> anomalias = anom.consultar(0, 0, condicion, this);
+        ArrayList<Anomalias> anomalias = anom.consultar(0, 0, "", this);
         adapter = new AdapterAnomalias(this, anomalias);
         l_anomalias.setAdapter(adapter);
         l_anomalias.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -64,23 +45,19 @@ public class AnomaliaActivity extends AppCompatActivity {
                                     long id) {
                 try {
                     Anomalias anomalia = (Anomalias) parent.getItemAtPosition(position);
-                    AuditoriaSesion.getInstance().setAnomalia(anomalia.getId());
-                    if(anomalia.getId() == Constants.AN_OTROS){
-                        AuditoriaSesion.getInstance().setObservacionObligatoria(true);
-                    } else {
-                        AuditoriaSesion.getInstance().setObservacionObligatoria(false);
-                    }
-                    if (Constants.isGpsActivo(AnomaliaActivity.this)) {
-                        if(AuditoriaSesion.getInstance().getResultado() == Constants.RES_CLIENTE_CONDICIONA_PAGO){
-                            Intent intentar = new Intent(AnomaliaActivity.this, DatosClienteActivity.class);
-                            startActivityForResult(intentar, Constants.SERVICIO_REQUEST_CODE);
-                        } else {
-                            Intent intentar = new Intent(AnomaliaActivity.this, ObservacionActivity.class);
-                            startActivityForResult(intentar, Constants.SERVICIO_REQUEST_CODE);
-                        }
+
+                    ServicioSesion.getInstance().setAnomalia(anomalia.getId());
+                    ServicioSesion.getInstance().setObservacionObligatoria(false);
+
+                    /*if (Constants.isGpsActivo(AnomaliaActivity.this)) {
+                        Intent intentar = new Intent(AnomaliaActivity.this, ObservacionActivity.class);
+                        startActivityForResult(intentar, Constants.SERVICIO_REQUEST_CODE);
                     } else {
                         Constants.ActivarGPS(AnomaliaActivity.this);
-                    }
+                    }*/
+
+                    Intent intentar = new Intent(AnomaliaActivity.this, ObservacionActivity.class);
+                    startActivityForResult(intentar, Constants.SERVICIO_REQUEST_CODE);
 
                 } catch (Exception ex) {
                     Toast.makeText(AnomaliaActivity.this, "Error en anomalia: " + ex, Toast.LENGTH_LONG).show();
