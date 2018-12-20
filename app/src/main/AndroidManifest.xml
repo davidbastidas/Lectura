@@ -31,12 +31,9 @@
         </activity>
         <activity android:name=".Vistas.AdminActivity" />
         <activity android:name=".Vistas.AnomaliaActivity" />
-        <activity android:name=".Vistas.DatosClienteActivity" />
         <activity android:name=".Vistas.DetalleActivity" />
-        <activity android:name=".Vistas.EntidadesActivity" />
         <activity android:name=".Vistas.ObservacionActivity" />
         <activity android:name=".Vistas.OperarioActivity" />
-        <activity android:name=".Vistas.ResultadoActivity" />
         <activity android:name=".Vistas.ServiciosActivity" />
         <activity android:name=".Vistas.BuscarActivity" />
         <activity android:name=".Vistas.BarriosActivity" />
