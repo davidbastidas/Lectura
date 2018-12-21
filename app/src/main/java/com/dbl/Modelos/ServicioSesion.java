@@ -31,6 +31,9 @@ public class ServicioSesion {
     private String foto;
     private String fechaRealizado;
     private long lectorRealizaId;
+    private int pideGps;
+    private int pideLectura;
+    private int pideFoto;
 
     private boolean observacionObligatoria;
 
@@ -160,6 +163,30 @@ public class ServicioSesion {
 
     public void setLectorRealizaId(long lectorRealizaId) {
         this.lectorRealizaId = lectorRealizaId;
+    }
+
+    public int getPideGps() {
+        return pideGps;
+    }
+
+    public void setPideGps(int pideGps) {
+        this.pideGps = pideGps;
+    }
+
+    public int getPideLectura() {
+        return pideLectura;
+    }
+
+    public void setPideLectura(int pideLectura) {
+        this.pideLectura = pideLectura;
+    }
+
+    public int getPideFoto() {
+        return pideFoto;
+    }
+
+    public void setPideFoto(int pideFoto) {
+        this.pideFoto = pideFoto;
     }
 
     public boolean isObservacionObligatoria() {

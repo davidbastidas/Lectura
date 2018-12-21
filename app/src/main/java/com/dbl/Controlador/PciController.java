@@ -56,6 +56,7 @@ public class PciController {
 			registro.put("lector_realiza_id", 0);
 			registro.put("estado", 0);
 			registro.put("last_insert", 0);
+			registro.put("pide_gps", pci.getPideGps());
 			lastInsert = db.insert(Constants.TABLA_PCI, null, registro);
 		}
 	}
@@ -136,6 +137,7 @@ public class PciController {
 				dataSet.setLectorRealizaId(c.getLong(24));
 				dataSet.setEstado(c.getLong(25));
 				dataSet.setLastInsert(c.getLong(26));
+				dataSet.setPideGps(c.getInt(27));
 				visitas.add(dataSet);
 			} while (c.moveToNext());
 		}

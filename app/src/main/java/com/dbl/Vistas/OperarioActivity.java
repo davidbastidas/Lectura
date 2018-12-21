@@ -39,7 +39,7 @@ public class OperarioActivity extends AppCompatActivity {
     ProgressDialog progressDialog = null;
     Auditorias auditoriaEnviar = null;
     Pci pciEnviar = null;
-    private int sizeVisitas = 0, sizePci = 0;
+    private int sizeAuditorias = 0, sizePci = 0;
     GestorConexion conexionGestor = new GestorConexion();
 
     @Override
@@ -88,7 +88,7 @@ public class OperarioActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        enviarVisitas();
+        enviarServicios();
         mostrarReporte();
         ServicioSesion.resetSesion();
     }
@@ -109,16 +109,16 @@ public class OperarioActivity extends AppCompatActivity {
                     @Override
                     protected String doInBackground(String... params) {
                         GestorConexion con = new GestorConexion();
-                        return con.descargarVisitas(SesionSingleton.getInstance().getFkId());
+                        return con.descargarServicios(SesionSingleton.getInstance().getFkId());
                     }
                     @Override
                     protected void onPostExecute(String result) {
-                        alFinalizarDescargaVisitas(result);
+                        alFinalizarDescargaServicios(result);
                     }
                 }.execute();
                 return true;
             case R.id.sincronizar:
-                enviarVisitas();
+                enviarServicios();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -151,8 +151,8 @@ public class OperarioActivity extends AppCompatActivity {
         );
     }
 
-    private void alFinalizarDescargaVisitas(String result) {
-        System.out.println("alFinalizarDescargaVisitas= " + result);
+    private void alFinalizarDescargaServicios(String result) {
+        System.out.println("alFinalizarDescargaServicios= " + result);
         result = "{\"array\":" + result + "}";
         SesionSingleton se = SesionSingleton.getInstance();
         AuditoriaController audcont = new AuditoriaController();
@@ -189,6 +189,9 @@ public class OperarioActivity extends AppCompatActivity {
                     anomalia = new Anomalias();
                     anomalia.setId(tr.getLong("id"));
                     anomalia.setNombre(tr.getString("nombre"));
+                    anomalia.setCodigo(tr.getString("codigo"));
+                    anomalia.setLectura(tr.getInt("lectura"));
+                    anomalia.setFoto(tr.getInt("foto"));
                     anoCon.insertar(anomalia, this);
                 }
 
@@ -209,46 +212,49 @@ public class OperarioActivity extends AppCompatActivity {
                 }
 
                 //insertando la tabla auditorias
-                JSONArray jArrayVisitas = json_data.getJSONArray("auditorias");
-                size = jArrayVisitas.length();
+                JSONArray jArrayServicios = json_data.getJSONArray("auditorias");
+                size = jArrayServicios.length();
                 AuditoriaController audCon = new AuditoriaController();
-                Auditorias visita = null;
+                audCon.eliminar("estado = 0 and last_insert = 0", this);
+                Auditorias auditoria = null;
                 for (int i = 0; i < size; ++i) {
-                    JSONObject tr = jArrayVisitas.getJSONObject(i);
-                    visita = new Auditorias();
-                    visita.setId(tr.getLong("id"));
-                    visita.setBarrio(tr.getString("barrio"));
-                    visita.setLocalidad(tr.getString("localidad"));
-                    visita.setCliente(tr.getString("cliente"));
-                    visita.setDireccion(tr.getString("direccion"));
-                    visita.setNic(tr.getLong("nic"));
-                    visita.setRuta(tr.getLong("ruta"));
-                    visita.setItin(tr.getLong("itin"));
-                    visita.setMedidor(tr.getString("medidor"));
-                    visita.setMotivo(tr.getString("motivo"));
-                    visita.setNis(tr.getInt("nis"));
-                    visita.setLectura("");
-                    visita.setAnomalia(0);
-                    visita.setObservacionRapida(0);
-                    visita.setHabitado(0);
-                    visita.setVisible(0);
-                    visita.setObservacionAnalisis("");
-                    visita.setLatitud("");
-                    visita.setLongitud("");
-                    visita.setOrden(0);
-                    visita.setFoto("");
-                    visita.setFechaRealizado("");
-                    visita.setLectorAsignadoId(SesionSingleton.getInstance().getFkId());
-                    visita.setLectorRealizaId(0);
-                    visita.setEstado(0);
-                    visita.setLastInsert(0);
-                    audCon.insertar(visita, this);
+                    JSONObject tr = jArrayServicios.getJSONObject(i);
+                    auditoria = new Auditorias();
+                    auditoria.setId(tr.getLong("id"));
+                    auditoria.setBarrio(tr.getString("barrio"));
+                    auditoria.setLocalidad(tr.getString("localidad"));
+                    auditoria.setCliente(tr.getString("cliente"));
+                    auditoria.setDireccion(tr.getString("direccion"));
+                    auditoria.setNic(tr.getLong("nic"));
+                    auditoria.setRuta(tr.getLong("ruta"));
+                    auditoria.setItin(tr.getLong("itin"));
+                    auditoria.setMedidor(tr.getString("medidor"));
+                    auditoria.setMotivo(tr.getString("motivo"));
+                    auditoria.setNis(tr.getInt("nis"));
+                    auditoria.setLectura("");
+                    auditoria.setAnomalia(0);
+                    auditoria.setObservacionRapida(0);
+                    auditoria.setHabitado(0);
+                    auditoria.setVisible(0);
+                    auditoria.setObservacionAnalisis("");
+                    auditoria.setLatitud("");
+                    auditoria.setLongitud("");
+                    auditoria.setOrden(0);
+                    auditoria.setFoto("");
+                    auditoria.setFechaRealizado("");
+                    auditoria.setLectorAsignadoId(SesionSingleton.getInstance().getFkId());
+                    auditoria.setLectorRealizaId(0);
+                    auditoria.setEstado(0);
+                    auditoria.setLastInsert(0);
+                    auditoria.setPideGps(tr.getInt("pide_gps"));
+                    audCon.insertar(auditoria, this);
                 }
 
                 //insertando la tabla pci
                 JSONArray jArrayPci = json_data.getJSONArray("pci");
                 size = jArrayPci.length();
                 PciController pciCon = new PciController();
+                pciCon.eliminar("estado = 0 and last_insert = 0", this);
                 Pci pci = null;
                 for (int i = 0; i < size; ++i) {
                     JSONObject tr = jArrayPci.getJSONObject(i);
@@ -280,6 +286,7 @@ public class OperarioActivity extends AppCompatActivity {
                     pci.setLectorRealizaId(0);
                     pci.setEstado(0);
                     pci.setLastInsert(0);
+                    pci.setPideGps(tr.getInt("pide_gps"));
                     pciCon.insertar(pci, this);
                 }
 
@@ -288,22 +295,22 @@ public class OperarioActivity extends AppCompatActivity {
             progressDialog.dismiss();
         } catch (Exception e) {
             System.out.println("Exception: "+e);
-            Toast.makeText(this, Constants.MSG_LEYENDO_DATOS + "de las visitas. " + e, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, Constants.MSG_LEYENDO_DATOS + "de los servicios. " + e, Toast.LENGTH_LONG).show();
         } finally {
             progressDialog.dismiss();
             mostrarReporte();
         }
     }
 
-    private void enviarVisitas() {
+    private void enviarServicios() {
         AuditoriaController audCont = new AuditoriaController();
         ArrayList<Auditorias> arrayAuditorias = audCont.consultar(0, 0, "estado = 1 and last_insert = 0", this);
-        sizeVisitas = arrayAuditorias.size();
+        sizeAuditorias = arrayAuditorias.size();
 
         PciController pciCont = new PciController();
         ArrayList<Pci> arrayPci = pciCont.consultar(0, 0, "estado = 1 and last_insert = 0", this);
         sizePci = arrayPci.size();
-        if(sizeVisitas > 0 || sizePci > 0){
+        if(sizeAuditorias > 0 || sizePci > 0){
             progressDialog = Constants.dialogIndeterminate(this, "Sincronizando...");
             new AsyncTask<String, Void, String>(){
                 @Override
@@ -321,8 +328,8 @@ public class OperarioActivity extends AppCompatActivity {
     private String iniciarSincronizacion(){
         AuditoriaController audCont = new AuditoriaController();
         ArrayList<Auditorias> arrayAuditorias = audCont.consultar(0, 0, "estado = 1 and last_insert = 0", this);
-        sizeVisitas = arrayAuditorias.size();
-        for (int i = 0; i < sizeVisitas; i++){
+        sizeAuditorias = arrayAuditorias.size();
+        for (int i = 0; i < sizeAuditorias; i++){
             auditoriaEnviar = new Auditorias();
             auditoriaEnviar.setId(arrayAuditorias.get(i).getId());
             auditoriaEnviar.setLectura(arrayAuditorias.get(i).getLectura());

@@ -87,7 +87,8 @@ public class SQLite extends SQLiteOpenHelper {
 				" lector_asignado_id INTEGER," +
 				" lector_realiza_id INTEGER," +
 				" estado INTEGER," +
-				" last_insert INTEGER" +
+				" last_insert INTEGER," +
+				" pide_gps INTEGER" +
 				")");
 
 		db.execSQL("create table " + Constants.TABLA_PCI + "(" +
@@ -117,12 +118,16 @@ public class SQLite extends SQLiteOpenHelper {
 				" lector_asignado_id INTEGER," +
 				" lector_realiza_id INTEGER," +
 				" estado INTEGER," +
-				" last_insert INTEGER" +
+				" last_insert INTEGER," +
+				" pide_gps INTEGER" +
 				")");
 
 		db.execSQL("create table " + Constants.TABLA_ANOMALIAS + "(" +
 				" id INTEGER PRIMARY KEY AUTOINCREMENT," +
-				" nombre TEXT" +
+				" nombre TEXT," +
+				" codigo TEXT," +
+				" lectura INTEGER," +
+				" foto INTEGER" +
 				")");
 
 		db.execSQL("create table " + Constants.TABLA_OBSERVACION_RAPIDA + "(" +

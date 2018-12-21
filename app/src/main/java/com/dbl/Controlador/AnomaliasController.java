@@ -30,6 +30,9 @@ public class AnomaliasController {
 			ContentValues registro = new ContentValues();
 			registro.put("id", anomalias.getId());
 			registro.put("nombre", anomalias.getNombre());
+			registro.put("codigo", anomalias.getCodigo());
+			registro.put("lectura", anomalias.getLectura());
+			registro.put("foto", anomalias.getFoto());
 			lastInsert = db.insert(Constants.TABLA_ANOMALIAS, null, registro);
 		}
 	}
@@ -78,6 +81,9 @@ public class AnomaliasController {
 				dataSet = new Anomalias();
 				dataSet.setId(c.getLong(0));
 				dataSet.setNombre(c.getString(1));
+				dataSet.setCodigo(c.getString(2));
+				dataSet.setLectura(c.getInt(3));
+				dataSet.setFoto(c.getInt(4));
 				anomalias.add(dataSet);
 			} while (c.moveToNext());
 		}

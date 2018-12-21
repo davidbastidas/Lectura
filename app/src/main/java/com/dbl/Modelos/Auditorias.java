@@ -27,6 +27,7 @@ public class Auditorias {
     private long lectorRealizaId;
     private long estado;
     private long lastInsert;
+    private int pideGps;
 
     public long getId() {
         return id;
@@ -234,5 +235,13 @@ public class Auditorias {
 
     public void setLastInsert(long lastInsert) {
         this.lastInsert = lastInsert;
+    }
+
+    public int getPideGps() {
+        return pideGps;
+    }
+
+    public void setPideGps(int pideGps) {
+        this.pideGps = pideGps;
     }
 }

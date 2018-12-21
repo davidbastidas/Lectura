@@ -53,6 +53,7 @@ public class AuditoriaController {
 			registro.put("lector_realiza_id", 0);
 			registro.put("estado", 0);
 			registro.put("last_insert", 0);
+			registro.put("pide_gps", 0);
 			lastInsert = db.insert(Constants.TABLA_AUDITORIAS, null, registro);
 		}
 	}
@@ -132,6 +133,7 @@ public class AuditoriaController {
 				dataSet.setLectorRealizaId(c.getLong(23));
 				dataSet.setEstado(c.getLong(24));
 				dataSet.setLastInsert(c.getLong(25));
+				dataSet.setPideGps(c.getInt(26));
 				visitas.add(dataSet);
 			} while (c.moveToNext());
 		}

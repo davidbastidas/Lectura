@@ -106,10 +106,9 @@ public class ObservacionActivity extends AppCompatActivity implements DialogoGPS
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_observacion);
-        setTitle("Observacion y Otros");
+        setTitle("Lectura y Otros");
 
         listenerGps = this;
-        comenzarLocalizacion();
 
         b_foto = findViewById(R.id.b_foto);
         b_finalizar = findViewById(R.id.b_finalizar);
@@ -129,14 +128,20 @@ public class ObservacionActivity extends AppCompatActivity implements DialogoGPS
             s_observacion.setVisibility(View.INVISIBLE);
         }
 
-        if (ServicioSesion.getInstance().getAnomalia() == Constants.EXTRA_AN_NO_EXISTE) {
+        if (ServicioSesion.getInstance().getPideLectura() == 0) {
             e_lectura.setVisibility(View.INVISIBLE);
             e_lectura.setEnabled(false);
         }
 
-        b_foto.setEnabled(true);
-        b_finalizar.setEnabled(true);
-        //b_finalizar.setText("Esperando el Punto GPS...");
+        if(ServicioSesion.getInstance().getPideGps() == 1){
+            b_foto.setEnabled(true);
+            b_finalizar.setEnabled(true);
+            b_finalizar.setText("Esperando el Punto GPS...");
+        } else {
+            b_foto.setEnabled(true);
+            b_finalizar.setEnabled(true);
+        }
+
         if (ServicioSesion.getInstance().getObservacionAnalisis() != null) {
             e_observacion.setText(ServicioSesion.getInstance().getObservacionAnalisis());
         }
@@ -183,30 +188,33 @@ public class ObservacionActivity extends AppCompatActivity implements DialogoGPS
                 validarGuardar();
             }
         });
-        //timerHandler.postDelayed(timerRunnable, 0);
+        if(ServicioSesion.getInstance().getPideGps() == 1){
+            comenzarLocalizacion();
+            timerHandler.postDelayed(timerRunnable, 0);
+        }
     }
 
     private void validarGuardar() {
         boolean pasa = true;
-        boolean fotoRequerida = true, lecturaRequerida = false, observacionRequerida = false;
+        boolean fotoRequerida = false, lecturaRequerida = false, observacionRequerida = false;
         String motivo = "";
 
         ServicioSesion servSess = ServicioSesion.getInstance();
-        if(servSess.getAnomalia() == 10){
-            fotoRequerida = false;
+        if(servSess.getPideFoto() == 1){
+            fotoRequerida = true;
         }
 
         if(ServicioSesion.getInstance().isObservacionObligatoria()){
             observacionRequerida = true;
         }
 
-        if(e_lectura.isEnabled()){
+        if(servSess.getPideLectura() == 1){
             lecturaRequerida = true;
         }
 
         if(fotoRequerida){
-            if (ServicioSesion.getInstance().getFoto() != null) {
-                if (ServicioSesion.getInstance().getFoto().equals("")) {
+            if (servSess.getFoto() != null) {
+                if (servSess.getFoto().equals("")) {
                     pasa = false;
                     motivo = "Debe tomar una foto para soporte.";
                 }
@@ -218,7 +226,17 @@ public class ObservacionActivity extends AppCompatActivity implements DialogoGPS
         if(observacionRequerida){
             if (e_observacion.getText().toString().trim().equals("")) {
                 pasa = false;
-                motivo = "Debe escribir la observacion.";
+                switch ((int) servSess.getAnomalia()){
+                    case Constants.AN001_001:
+                        motivo = "Ingrese el numero del MEDIDOR o NIC unificado.";
+                        break;
+                    case Constants.AN088:
+                        motivo = "Escriba los DIGITOS diferentes.";
+                        break;
+                    default:
+                        motivo = "Debe escribir la observacion.";
+                        break;
+                }
             }
         }
         if(lecturaRequerida){
@@ -230,8 +248,12 @@ public class ObservacionActivity extends AppCompatActivity implements DialogoGPS
 
         if(pasa){
             ServicioSesion.getInstance().setObservacionAnalisis(e_observacion.getText().toString());
-            guardarVisita();
-            //validarGuardarGps();
+
+            if(ServicioSesion.getInstance().getPideGps() == 1){
+                validarGuardarGps();
+            } else {
+                guardarVisita();
+            }
         }else{
             Toast.makeText(ObservacionActivity.this, motivo, Toast.LENGTH_LONG).show();
         }

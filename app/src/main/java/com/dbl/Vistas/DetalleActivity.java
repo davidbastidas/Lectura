@@ -3,6 +3,7 @@ package com.dbl.Vistas;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.se.omapi.Session;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -70,13 +71,20 @@ public class DetalleActivity extends AppCompatActivity {
         b_ir_anomalia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Constants.isGpsActivo(DetalleActivity.this)) {
-                    ServicioSesion.getInstance().setTipoServicio(servicioTipoId);
+                ServicioSesion.getInstance().setId(servicioId);
+                ServicioSesion.getInstance().setTipoServicio(servicioTipoId);
+                if(ServicioSesion.getInstance().getPideGps() == 1){
+                    if (Constants.isGpsActivo(DetalleActivity.this)) {
+                        Intent intentar = new Intent(DetalleActivity.this, AnomaliaActivity.class);
+                        startActivityForResult(intentar, Constants.SERVICIO_REQUEST_CODE);
+                    } else {
+                        Constants.ActivarGPS(DetalleActivity.this);
+                    }
+                } else {
                     Intent intentar = new Intent(DetalleActivity.this, AnomaliaActivity.class);
                     startActivityForResult(intentar, Constants.SERVICIO_REQUEST_CODE);
-                } else {
-                    Constants.ActivarGPS(DetalleActivity.this);
                 }
+
             }
         });
     }
@@ -190,6 +198,8 @@ public class DetalleActivity extends AppCompatActivity {
         datum.setSubtitulo("" + auditoria.getId());
         data.add(datum);
 
+        ServicioSesion.getInstance().setPideGps(auditoria.getPideGps());
+
         return data;
     }
 
@@ -287,6 +297,8 @@ public class DetalleActivity extends AppCompatActivity {
         datum.setTitulo("IDBD");
         datum.setSubtitulo("" + pci.getId());
         data.add(datum);
+
+        ServicioSesion.getInstance().setPideGps(pci.getPideGps());
 
         return data;
     }

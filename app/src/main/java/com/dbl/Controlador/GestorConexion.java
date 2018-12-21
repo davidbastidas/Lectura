@@ -27,7 +27,7 @@ public class GestorConexion {
         }
     }
 
-    public String descargarVisitas(int userId){
+    public String descargarServicios(int userId){
         JSONObject obj = new JSONObject();
         try {
             obj.put("user", userId);

@@ -45,20 +45,9 @@ public class AnomaliaActivity extends AppCompatActivity {
                                     long id) {
                 try {
                     Anomalias anomalia = (Anomalias) parent.getItemAtPosition(position);
-
-                    ServicioSesion.getInstance().setAnomalia(anomalia.getId());
-                    ServicioSesion.getInstance().setObservacionObligatoria(false);
-
-                    /*if (Constants.isGpsActivo(AnomaliaActivity.this)) {
-                        Intent intentar = new Intent(AnomaliaActivity.this, ObservacionActivity.class);
-                        startActivityForResult(intentar, Constants.SERVICIO_REQUEST_CODE);
-                    } else {
-                        Constants.ActivarGPS(AnomaliaActivity.this);
-                    }*/
-
-                    Intent intentar = new Intent(AnomaliaActivity.this, ObservacionActivity.class);
-                    startActivityForResult(intentar, Constants.SERVICIO_REQUEST_CODE);
-
+                    ServicioSesion.getInstance().setPideFoto(anomalia.getFoto());
+                    ServicioSesion.getInstance().setPideLectura(anomalia.getLectura());
+                    validarAnomalia((int) anomalia.getId());
                 } catch (Exception ex) {
                     Toast.makeText(AnomaliaActivity.this, "Error en anomalia: " + ex, Toast.LENGTH_LONG).show();
                 }
@@ -78,6 +67,34 @@ public class AnomaliaActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable arg0) {}
         });
+    }
+
+    private void validarAnomalia(int id) {
+        ServicioSesion.getInstance().setAnomalia(id);
+
+        switch (id){
+            case Constants.AN001_001:
+                ServicioSesion.getInstance().setObservacionObligatoria(true);
+                break;
+            case Constants.AN088:
+                ServicioSesion.getInstance().setObservacionObligatoria(true);
+                break;
+            default:
+                ServicioSesion.getInstance().setObservacionObligatoria(false);
+                break;
+        }
+
+        if(ServicioSesion.getInstance().getPideGps() == 1){
+            if (Constants.isGpsActivo(AnomaliaActivity.this)) {
+                Intent intentar = new Intent(AnomaliaActivity.this, ObservacionActivity.class);
+                startActivityForResult(intentar, Constants.SERVICIO_REQUEST_CODE);
+            } else {
+                Constants.ActivarGPS(AnomaliaActivity.this);
+            }
+        } else {
+            Intent intentar = new Intent(AnomaliaActivity.this, ObservacionActivity.class);
+            startActivityForResult(intentar, Constants.SERVICIO_REQUEST_CODE);
+        }
     }
 
     @Override
