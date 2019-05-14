@@ -7,6 +7,7 @@ public class Anomalias {
 	private String codigo;
 	private int lectura;
 	private int foto;
+	private int orden;
 
 	public Anomalias() {
 	}
@@ -49,5 +50,13 @@ public class Anomalias {
 
 	public void setFoto(int foto) {
 		this.foto = foto;
+	}
+
+	public int getOrden() {
+		return orden;
+	}
+
+	public void setOrden(int orden) {
+		this.orden = orden;
 	}
 }

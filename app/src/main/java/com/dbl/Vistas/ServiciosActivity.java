@@ -59,7 +59,7 @@ public class ServiciosActivity extends AppCompatActivity {
                     servicio.setId(aud.getId());
                     servicio.setTipoServicio(1);
                     servicio.setTitulo(aud.getDireccion());
-                    servicio.setSubtitulo(aud.getBarrio() + " - NIC: " + aud.getNic());
+                    servicio.setSubtitulo(aud.getBarrio() + " - NIC: " + aud.getNic() + " - MED: " + aud.getMedidor());
                     servicios.add(servicio);
                 }
 
@@ -116,7 +116,7 @@ public class ServiciosActivity extends AppCompatActivity {
                     servicio.setId(aud.getId());
                     servicio.setTipoServicio(1);
                     servicio.setTitulo(aud.getDireccion());
-                    servicio.setSubtitulo(aud.getBarrio() + " - NIC: " + aud.getNic());
+                    servicio.setSubtitulo(aud.getBarrio() + " - NIC: " + aud.getNic() + " - MED: " + aud.getMedidor());
                     servicios.add(servicio);
                 }
 
@@ -178,7 +178,7 @@ public class ServiciosActivity extends AppCompatActivity {
             servicio.setId(aud.getId());
             servicio.setTipoServicio(Constants.EXTRA_SERVICIO_TIPO_AUDITORIA);
             servicio.setTitulo(aud.getDireccion());
-            servicio.setSubtitulo(aud.getBarrio() + " - NIC: " + aud.getNic());
+            servicio.setSubtitulo(aud.getBarrio() + " - NIC: " + aud.getNic() + " - MED: " + aud.getMedidor());
             servicios.add(servicio);
         }
         

@@ -27,6 +27,7 @@ public class AdapterAnomalias extends BaseAdapter implements Filterable {
 	public AdapterAnomalias(Activity actividad, ArrayList<Anomalias> anomalias){
 		super();
 		this.actividad = actividad;
+		this.anomaliasOriginal = anomalias;
 		this.anomaliasFiltrado = anomalias;
 	}
 
@@ -79,7 +80,7 @@ public class AdapterAnomalias extends BaseAdapter implements Filterable {
 				constraint = constraint.toString().toLowerCase();
 				for (int i = 0; i < anomaliasOriginal.size(); i++) {
 					Anomalias anomalia = AdapterAnomalias.this.anomaliasOriginal.get(i);
-					if (anomalia.getNombre().toLowerCase().startsWith(constraint.toString()))  {
+					if (anomalia.getNombre().toLowerCase().contains(constraint.toString()))  {
 						FilteredArrayNames.add(anomalia);
 					}
 				}

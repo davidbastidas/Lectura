@@ -119,7 +119,11 @@ public class SQLite extends SQLiteOpenHelper {
 				" lector_realiza_id INTEGER," +
 				" estado INTEGER," +
 				" last_insert INTEGER," +
-				" pide_gps INTEGER" +
+				" pide_gps INTEGER," +
+				" ultima_anomalia TEXT," +
+				" lectura1 INTEGER," +
+				" lectura2 INTEGER," +
+				" desviacion_aceptada INTEGER" +
 				")");
 
 		db.execSQL("create table " + Constants.TABLA_ANOMALIAS + "(" +
@@ -127,7 +131,8 @@ public class SQLite extends SQLiteOpenHelper {
 				" nombre TEXT," +
 				" codigo TEXT," +
 				" lectura INTEGER," +
-				" foto INTEGER" +
+				" foto INTEGER," +
+				" orden INTEGER" +
 				")");
 
 		db.execSQL("create table " + Constants.TABLA_OBSERVACION_RAPIDA + "(" +
@@ -141,6 +146,7 @@ public class SQLite extends SQLiteOpenHelper {
                           int versionNueva) {
 		db.execSQL("DROP TABLE IF EXISTS " + Constants.TABLA_USUARIOS);
 		db.execSQL("DROP TABLE IF EXISTS " + Constants.TABLA_AUDITORIAS);
+		db.execSQL("DROP TABLE IF EXISTS " + Constants.TABLA_PCI);
 		db.execSQL("DROP TABLE IF EXISTS " + Constants.TABLA_ANOMALIAS);
 		db.execSQL("DROP TABLE IF EXISTS " + Constants.TABLA_OBSERVACION_RAPIDA);
 		onCreate(db);

@@ -30,6 +30,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dbl.BuildConfig;
@@ -59,6 +60,7 @@ public class ObservacionActivity extends AppCompatActivity implements DialogoGPS
     Button b_foto, b_finalizar;
     Spinner s_observacion;
     EditText e_lectura, e_observacion;
+    TextView t_lectura, textHabitado, textVisible, textTipoServicio;
     RadioButton rb_hab_si, rb_hab_no;
     RadioButton rb_an_si, rb_an_no;
     RadioGroup rg_habitado, rg_visible;
@@ -66,6 +68,10 @@ public class ObservacionActivity extends AppCompatActivity implements DialogoGPS
     ProgressDialog progressDialog = null;
     Auditorias auditoriaEnviar = null;
     Pci pciEnviar = null;
+    int lecturaActual = -1;
+    int lecturaDesviada = -1;
+    boolean cancelarCritica = false;
+    private int desviacionAceptda = 30;
 
     /** OPCIONES DEL GPS*/
     private ObservacionActivity listenerGps;
@@ -115,6 +121,10 @@ public class ObservacionActivity extends AppCompatActivity implements DialogoGPS
         s_observacion = findViewById(R.id.s_observacion);
         e_observacion = findViewById(R.id.e_observacion);
         e_lectura = findViewById(R.id.e_lectura);
+        t_lectura = findViewById(R.id.textLectura);
+        textHabitado = findViewById(R.id.textHabitado);
+        textVisible = findViewById(R.id.textVisible);
+        textTipoServicio = findViewById(R.id.textTipoServicio);
         rb_hab_si = findViewById(R.id.rb_hab_si);
         rb_hab_no = findViewById(R.id.rb_hab_no);
         rb_an_si = findViewById(R.id.rb_an_si);
@@ -126,20 +136,26 @@ public class ObservacionActivity extends AppCompatActivity implements DialogoGPS
             rg_habitado.setVisibility(View.INVISIBLE);
             rg_visible.setVisibility(View.INVISIBLE);
             s_observacion.setVisibility(View.INVISIBLE);
+            textHabitado.setVisibility(View.INVISIBLE);
+            textVisible.setVisibility(View.INVISIBLE);
+            textTipoServicio.setVisibility(View.INVISIBLE);
+            desviacionAceptda = ServicioSesion.getInstance().getDesviacionAceptda();
         }
 
         if (ServicioSesion.getInstance().getPideLectura() == 0) {
+            t_lectura.setVisibility(View.INVISIBLE);
             e_lectura.setVisibility(View.INVISIBLE);
             e_lectura.setEnabled(false);
         }
 
         if(ServicioSesion.getInstance().getPideGps() == 1){
-            b_foto.setEnabled(true);
-            b_finalizar.setEnabled(true);
+            b_foto.setEnabled(false);
+            b_finalizar.setEnabled(false);
             b_finalizar.setText("Esperando el Punto GPS...");
         } else {
             b_foto.setEnabled(true);
             b_finalizar.setEnabled(true);
+            b_finalizar.setText("FINALIZAR Y GUARDAR");
         }
 
         if (ServicioSesion.getInstance().getObservacionAnalisis() != null) {
@@ -243,6 +259,36 @@ public class ObservacionActivity extends AppCompatActivity implements DialogoGPS
             if (e_lectura.getText().toString().trim().equals("")) {
                 pasa = false;
                 motivo = "Debe escribir la Lectura.";
+            }else{
+                if(ServicioSesion.getInstance().getTipoServicio() == Constants.EXTRA_SERVICIO_TIPO_PCI){
+                    //validar la critica
+                    int lectura1 = ServicioSesion.getInstance().getLectura1();
+                    int lectura2 = ServicioSesion.getInstance().getLectura2();
+                    if(lectura1 == -1 || lectura2 == -1){
+                        Toast.makeText(ObservacionActivity.this, "SIN CRITICA.", Toast.LENGTH_LONG).show();
+                    }else{
+                        lecturaActual = Integer.parseInt(e_lectura.getText().toString());
+                        int consumoActual = lecturaActual - lectura1;
+                        int consumoAnterior = lectura1 - lectura2;
+                        double desviacion = 0;
+                        if(consumoAnterior > 0){
+                            desviacion = Math.ceil(((consumoAnterior - consumoActual)/consumoAnterior)*100);
+                        }
+                        if (desviacion > desviacionAceptda || desviacion > -desviacionAceptda){
+                            if(lecturaActual == lecturaDesviada){
+                                if(!cancelarCritica){
+                                    Toast.makeText(ObservacionActivity.this, "LECTURA DESVIADA.", Toast.LENGTH_LONG).show();
+                                    cancelarCritica = true;
+                                }
+                            }else{
+                                lecturaDesviada = lecturaActual;
+                                pasa = false;
+                                motivo = "LECTURA DESVIADA, POR FAVOR VERIFICA LA LECTURA.";
+                                cancelarCritica = false;
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -277,13 +323,13 @@ public class ObservacionActivity extends AppCompatActivity implements DialogoGPS
         } else {
             Toast.makeText(this, "SIN PUNTO GPS.", Toast.LENGTH_SHORT).show();
         }
-
+        ServicioSesion sesion = ServicioSesion.getInstance();
+        sesion.setLectura(e_lectura.getText().toString());
         if(ServicioSesion.getInstance().getTipoServicio() == Constants.EXTRA_SERVICIO_TIPO_AUDITORIA){
             AuditoriaController audCont = new AuditoriaController();
             int orden = audCont.ultimoOrden(this);
             orden = orden + 1;
 
-            ServicioSesion sesion = ServicioSesion.getInstance();
             auditoriaEnviar = new Auditorias();
             auditoriaEnviar.setId(sesion.getId());
             auditoriaEnviar.setAnomalia(sesion.getAnomalia());
@@ -329,7 +375,6 @@ public class ObservacionActivity extends AppCompatActivity implements DialogoGPS
             int orden = pciCont.ultimoOrden(this);
             orden = orden + 1;
 
-            ServicioSesion sesion = ServicioSesion.getInstance();
             pciEnviar = new Pci();
             pciEnviar.setId(sesion.getId());
             pciEnviar.setAnomalia(sesion.getAnomalia());

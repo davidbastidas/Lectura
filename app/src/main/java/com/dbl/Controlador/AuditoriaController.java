@@ -53,7 +53,7 @@ public class AuditoriaController {
 			registro.put("lector_realiza_id", 0);
 			registro.put("estado", 0);
 			registro.put("last_insert", 0);
-			registro.put("pide_gps", 0);
+			registro.put("pide_gps", visita.getPideGps());
 			lastInsert = db.insert(Constants.TABLA_AUDITORIAS, null, registro);
 		}
 	}

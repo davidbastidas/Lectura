@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.dbl.Controlador.AuditoriaController;
+import com.dbl.Controlador.PciController;
 import com.dbl.Modelos.Constants;
 import com.dbl.Modelos.SesionSingleton;
 import com.dbl.Modelos.Auditorias;
@@ -57,13 +58,16 @@ public class AdminActivity extends AppCompatActivity {
                                     protected String doInBackground(String... params) {
                                         AuditoriaController vis = new AuditoriaController();
                                         vis.eliminarTodo(AdminActivity.this);
+
+                                        PciController pci = new PciController();
+                                        pci.eliminarTodo(AdminActivity.this);
                                         return "";
                                     }
                                     @Override
                                     protected void onPostExecute(String result) {
                                         Toast.makeText(
                                                 AdminActivity.this,
-                                                "Se BORRARON las visitas",
+                                                "Se BORRARON los servicios",
                                                 Toast.LENGTH_LONG).show();
                                     }
                                 }.execute();
@@ -128,7 +132,7 @@ public class AdminActivity extends AppCompatActivity {
                                     protected void onPostExecute(String result) {
                                         Toast.makeText(
                                                 AdminActivity.this,
-                                                "Se restablecieron las visitas",
+                                                "Se restablecieron los servicios",
                                                 Toast.LENGTH_LONG).show();
                                     }
                                 }.execute();
@@ -143,7 +147,7 @@ public class AdminActivity extends AppCompatActivity {
                 };
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(AdminActivity.this);
-                builder.setMessage("Esta seguro de restablecer las visitas?").setPositiveButton("Si", dialogClickListener)
+                builder.setMessage("Esta seguro de restablecer los servicios?").setPositiveButton("Si", dialogClickListener)
                         .setNegativeButton("No", dialogClickListener).show();
             }
         });

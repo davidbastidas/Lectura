@@ -57,6 +57,10 @@ public class PciController {
 			registro.put("estado", 0);
 			registro.put("last_insert", 0);
 			registro.put("pide_gps", pci.getPideGps());
+			registro.put("ultima_anomalia", pci.getUltimaAnomalia());
+			registro.put("lectura1", pci.getLectura1());
+			registro.put("lectura2", pci.getLectura2());
+			registro.put("desviacion_aceptada", pci.getDesviacionAceptada());
 			lastInsert = db.insert(Constants.TABLA_PCI, null, registro);
 		}
 	}
@@ -138,6 +142,10 @@ public class PciController {
 				dataSet.setEstado(c.getLong(25));
 				dataSet.setLastInsert(c.getLong(26));
 				dataSet.setPideGps(c.getInt(27));
+				dataSet.setUltimaAnomalia(c.getString(28));
+				dataSet.setLectura1(c.getInt(29));
+				dataSet.setLectura2(c.getInt(30));
+				dataSet.setDesviacionAceptada(c.getInt(31));
 				visitas.add(dataSet);
 			} while (c.moveToNext());
 		}

@@ -33,6 +33,7 @@ public class AnomaliasController {
 			registro.put("codigo", anomalias.getCodigo());
 			registro.put("lectura", anomalias.getLectura());
 			registro.put("foto", anomalias.getFoto());
+			registro.put("orden", anomalias.getOrden());
 			lastInsert = db.insert(Constants.TABLA_ANOMALIAS, null, registro);
 		}
 	}
@@ -69,7 +70,7 @@ public class AnomaliasController {
 		if(!condicion.equals("")){
 			where = " WHERE " + condicion;
 		}
-		c = db.rawQuery("SELECT * FROM " + Constants.TABLA_ANOMALIAS + " " + where+" ORDER BY id "+limit, null);
+		c = db.rawQuery("SELECT * FROM " + Constants.TABLA_ANOMALIAS + " " + where+" ORDER BY orden "+limit, null);
 		countCursor = db.rawQuery("SELECT count(id) FROM " + Constants.TABLA_ANOMALIAS + " " + where, null);
 		if (countCursor.moveToFirst()) {
 			do {
@@ -84,6 +85,7 @@ public class AnomaliasController {
 				dataSet.setCodigo(c.getString(2));
 				dataSet.setLectura(c.getInt(3));
 				dataSet.setFoto(c.getInt(4));
+				dataSet.setOrden(c.getInt(5));
 				anomalias.add(dataSet);
 			} while (c.moveToNext());
 		}

@@ -104,7 +104,7 @@ public class OperarioActivity extends AppCompatActivity {
         // Handle action bar actions click
         switch (item.getItemId()) {
             case R.id.servicios:
-                progressDialog = Constants.dialogIndeterminate(this, "Descargando Auditorias...");
+                progressDialog = Constants.dialogIndeterminate(this, "Descargando Servicios...");
                 new AsyncTask<String, Void, String>(){
                     @Override
                     protected String doInBackground(String... params) {
@@ -147,7 +147,7 @@ public class OperarioActivity extends AppCompatActivity {
 
     private void acercaDe(){
         t_acerca.setText(
-                "Lectura de Medidores Version 1.1 2018-12-24 08:00:00"
+                "Lectura de Medidores Version 1.1 2019-04-07 08:00:00"
         );
     }
 
@@ -192,6 +192,7 @@ public class OperarioActivity extends AppCompatActivity {
                     anomalia.setCodigo(tr.getString("codigo"));
                     anomalia.setLectura(tr.getInt("lectura"));
                     anomalia.setFoto(tr.getInt("foto"));
+                    anomalia.setOrden(tr.getInt("orden"));
                     anoCon.insertar(anomalia, this);
                 }
 
@@ -287,6 +288,10 @@ public class OperarioActivity extends AppCompatActivity {
                     pci.setEstado(0);
                     pci.setLastInsert(0);
                     pci.setPideGps(tr.getInt("pide_gps"));
+                    pci.setUltimaAnomalia(tr.getString("ultima_anomalia"));
+                    pci.setLectura1(tr.getInt("lectura1"));
+                    pci.setLectura2(tr.getInt("lectura2"));
+                    pci.setDesviacionAceptada(tr.getInt("desviacion_aceptada"));
                     pciCon.insertar(pci, this);
                 }
 

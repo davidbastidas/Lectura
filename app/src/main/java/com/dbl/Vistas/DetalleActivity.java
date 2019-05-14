@@ -55,18 +55,22 @@ public class DetalleActivity extends AppCompatActivity {
             if(servicioTipoId == Constants.EXTRA_SERVICIO_TIPO_AUDITORIA){
                 auditoria = audCont.consultar(0, 0, "id = " + servicioId, this).get(0);
                 data = llenarPorAuditoria(auditoria);
+                if(auditoria.getEstado() != 0){
+                    b_ir_anomalia.setEnabled(false);
+                }
+                ServicioSesion.getInstance().setPideGps(auditoria.getPideGps());
             } else if(servicioTipoId == Constants.EXTRA_SERVICIO_TIPO_PCI){
                 pci = pciCont.consultar(0, 0, "id = " + servicioId, this).get(0);
                 data = llenarPorPci(pci);
+                if(pci.getEstado() != 0){
+                    b_ir_anomalia.setEnabled(false);
+                }
+                ServicioSesion.getInstance().setPideGps(pci.getPideGps());
             }
         }
 
         AdapterDetalleServicio adapter = new AdapterDetalleServicio(this, data);
         l_detalle.setAdapter(adapter);
-
-        if(auditoria.getEstado() != 0){
-            b_ir_anomalia.setEnabled(false);
-        }
 
         b_ir_anomalia.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -299,6 +303,10 @@ public class DetalleActivity extends AppCompatActivity {
         data.add(datum);
 
         ServicioSesion.getInstance().setPideGps(pci.getPideGps());
+        ServicioSesion.getInstance().setUltimaAnomalia(pci.getUltimaAnomalia());
+        ServicioSesion.getInstance().setLectura1(pci.getLectura1());
+        ServicioSesion.getInstance().setLectura2(pci.getLectura2());
+        ServicioSesion.getInstance().setDesviacionAceptda(pci.getDesviacionAceptada());
 
         return data;
     }

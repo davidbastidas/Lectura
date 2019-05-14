@@ -17,7 +17,7 @@ import com.dbl.R;
 public class BuscarActivity extends AppCompatActivity {
 
     Button b_ir_buscar;
-    EditText e_nic, e_medidor, e_direccion;
+    EditText e_nic, e_medidor, e_direccion, e_ct, e_mt;
     RadioButton rb_pendientes, rb_realizados;
     AuditoriaController vis = null;
     boolean realizados = true;
@@ -26,10 +26,12 @@ public class BuscarActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_buscar);
-        setTitle("Busqueda de visita");
+        setTitle("Busqueda de Servicio");
         e_nic = findViewById(R.id.e_nic);
         e_medidor = findViewById(R.id.e_medidor);
         e_direccion = findViewById(R.id.e_direccion);
+        e_ct = findViewById(R.id.e_ct);
+        e_mt = findViewById(R.id.e_mt);
         rb_pendientes = findViewById(R.id.rb_pendientes);
         rb_realizados = findViewById(R.id.rb_realizados);
         b_ir_buscar = findViewById(R.id.b_ir_buscar);
@@ -39,15 +41,21 @@ public class BuscarActivity extends AppCompatActivity {
         b_ir_buscar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!e_nic.getText().toString().equals("") || !e_medidor.getText().toString().equals("") || !e_direccion.getText().toString().equals("")) {
+                if (!e_nic.getText().toString().equals("") ||
+                        !e_medidor.getText().toString().equals("") ||
+                        !e_direccion.getText().toString().equals("") ||
+                        !e_ct.getText().toString().equals("") ||
+                        !e_mt.getText().toString().equals("")) {
                     Intent intentar = new Intent(BuscarActivity.this, ServiciosActivity.class);
                     intentar.putExtra(Constants.EXTRA_NIC, e_nic.getText().toString());
                     intentar.putExtra(Constants.EXTRA_MEDIDOR, e_medidor.getText().toString());
                     intentar.putExtra(Constants.EXTRA_DIRECCION, e_direccion.getText().toString());
+                    intentar.putExtra(Constants.EXTRA_CT, e_ct.getText().toString());
+                    intentar.putExtra(Constants.EXTRA_MT, e_mt.getText().toString());
                     intentar.putExtra(Constants.EXTRA_REALIZADO, realizados);
                     startActivityForResult(intentar, Constants.SERVICIO_REQUEST_CODE);
                 } else {
-                    Toast.makeText(BuscarActivity.this, "Debe ingresar la visita a buscar", Toast.LENGTH_LONG).show();
+                    Toast.makeText(BuscarActivity.this, "Debe ingresar el servicio a buscar", Toast.LENGTH_LONG).show();
                 }
             }
         });

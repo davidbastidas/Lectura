@@ -44,6 +44,8 @@ public class GestorConexion {
             obj.put("id", audioria.getId());
             obj.put("lectura", audioria.getLectura());
             obj.put("anomalia", audioria.getAnomalia());
+            obj.put("habitado", audioria.getHabitado());
+            obj.put("visible", audioria.getVisible());
             obj.put("observacion_rapida", audioria.getObservacionRapida());
             obj.put("observacion_analisis", audioria.getObservacionAnalisis());
             obj.put("latitud", audioria.getLatitud());

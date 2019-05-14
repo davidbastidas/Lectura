@@ -29,6 +29,10 @@ public class Pci {
     private long estado;
     private long lastInsert;
     private int pideGps;
+    private String ultimaAnomalia;
+    private int lectura1;
+    private int lectura2;
+    private int desviacionAceptada;
 
     public long getId() {
         return id;
@@ -252,5 +256,37 @@ public class Pci {
 
     public void setPideGps(int pideGps) {
         this.pideGps = pideGps;
+    }
+
+    public String getUltimaAnomalia() {
+        return ultimaAnomalia;
+    }
+
+    public void setUltimaAnomalia(String ultimaAnomalia) {
+        this.ultimaAnomalia = ultimaAnomalia;
+    }
+
+    public int getLectura1() {
+        return lectura1;
+    }
+
+    public void setLectura1(int lectura1) {
+        this.lectura1 = lectura1;
+    }
+
+    public int getLectura2() {
+        return lectura2;
+    }
+
+    public void setLectura2(int lectura2) {
+        this.lectura2 = lectura2;
+    }
+
+    public int getDesviacionAceptada() {
+        return desviacionAceptada;
+    }
+
+    public void setDesviacionAceptada(int desviacionAceptada) {
+        this.desviacionAceptada = desviacionAceptada;
     }
 }

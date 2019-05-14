@@ -34,6 +34,10 @@ public class ServicioSesion {
     private int pideGps;
     private int pideLectura;
     private int pideFoto;
+    private String ultimaAnomalia;
+    private int lectura1;
+    private int lectura2;
+    private int desviacionAceptda = 30;
 
     private boolean observacionObligatoria;
 
@@ -195,5 +199,37 @@ public class ServicioSesion {
 
     public void setObservacionObligatoria(boolean observacionObligatoria) {
         this.observacionObligatoria = observacionObligatoria;
+    }
+
+    public String getUltimaAnomalia() {
+        return ultimaAnomalia;
+    }
+
+    public void setUltimaAnomalia(String ultimaAnomalia) {
+        this.ultimaAnomalia = ultimaAnomalia;
+    }
+
+    public int getLectura1() {
+        return lectura1;
+    }
+
+    public void setLectura1(int lectura1) {
+        this.lectura1 = lectura1;
+    }
+
+    public int getLectura2() {
+        return lectura2;
+    }
+
+    public void setLectura2(int lectura2) {
+        this.lectura2 = lectura2;
+    }
+
+    public int getDesviacionAceptda() {
+        return desviacionAceptda;
+    }
+
+    public void setDesviacionAceptda(int desviacionAceptda) {
+        this.desviacionAceptda = desviacionAceptda;
     }
 }

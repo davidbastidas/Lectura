@@ -18,6 +18,7 @@ import java.util.ArrayList;
 public class AdapterServicios extends BaseAdapter implements Filterable {
 	private final Activity actividad;
 	private ArrayList<Servicio> servicios;
+	private ArrayList<Servicio> serviciosFiltrados;
 
 	View view;
 	LayoutInflater inflater;
@@ -27,6 +28,7 @@ public class AdapterServicios extends BaseAdapter implements Filterable {
 		super();
 		this.actividad = actividad;
 		this.servicios = servicios;
+		this.serviciosFiltrados = servicios;
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -35,17 +37,17 @@ public class AdapterServicios extends BaseAdapter implements Filterable {
 
 		titulo = view.findViewById(R.id.t_titulo);
 		barrio = view.findViewById(R.id.t_subtitulo);
-		titulo.setText(servicios.get(position).getTitulo());
-		barrio.setText(servicios.get(position).getSubtitulo());
+		titulo.setText(serviciosFiltrados.get(position).getTitulo());
+		barrio.setText(serviciosFiltrados.get(position).getSubtitulo());
 		return view;
 	}
 
 	public int getCount() {
-		return servicios.size();
+		return serviciosFiltrados.size();
 	}
 
 	public Object getItem(int arg0) {
-		return servicios.get(arg0);
+		return serviciosFiltrados.get(arg0);
 	}
 
 	public long getItemId(int position) {
@@ -61,7 +63,7 @@ public class AdapterServicios extends BaseAdapter implements Filterable {
 			@Override
 			protected void publishResults(CharSequence constraint, FilterResults results) {
 
-				servicios = (ArrayList<Servicio>) results.values;
+				serviciosFiltrados = (ArrayList<Servicio>) results.values;
 				if (results.count > 0) {
 					notifyDataSetChanged();
 				} else {

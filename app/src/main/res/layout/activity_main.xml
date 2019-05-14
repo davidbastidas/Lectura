@@ -13,13 +13,13 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="215dp"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="118dp"
                 android:layout_weight="0"
                 android:orientation="horizontal">
 
@@ -37,8 +37,8 @@
 
                     <EditText
                         android:id="@+id/e_usuario"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dip"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="14dp"
                         android:layout_weight="1"
                         android:ems="10"
@@ -49,8 +49,8 @@
 
                     <EditText
                         android:id="@+id/e_contrasena"
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dip"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="14dp"
                         android:layout_weight="1"
                         android:ems="10"
